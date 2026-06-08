@@ -1,0 +1,65 @@
+👤 TOI → Réseau + Core serveur
+
+Vu que tu veux apprendre les vraies compétences, prends :
+
+socket
+poll
+non-blocking
+gestion clients
+buffers
+parsing
+
+👉 C’est la partie la plus difficile
+👉 mais aussi la plus formatrice
+
+Et honnêtement :
+
+c’est le vrai cœur technique du projet
+👤 L’autre personne → Logique IRC
+
+Elle peut gérer :
+
+Channel class
+JOIN
+PRIVMSG
+KICK
+MODE
+TOPIC
+INVITE
+
+👉 C’est plus “logique métier”
+
+
+🟦 TOI (backend / réseau / parsing)
+
+👉 Tu peux garder :
+
+✔ réseau
+poll loop
+accept
+recv
+remove client
+✔ parsing
+Command struct
+split cmd + args
+buffer management
+✔ dispatch (optionnel)
+juste router vers handlers
+🟨 PARTENAIRE (logique IRC)
+
+👉 tu lui laisses :
+
+✔ règles IRC
+NICK
+USER
+PASS
+QUIT
+✔ channels
+JOIN
+PART
+channel struct
+membership
+✔ messaging
+PRIVMSG
+broadcast
+user-to-user messaging
