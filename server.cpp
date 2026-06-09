@@ -25,6 +25,15 @@ int Server::initServer(){
         return 0;
     }
 
+    int opt = 1;
+    if (setsockopt(_serverFd, SOL_SOCKET, SO_REUSEADDR,
+                &opt, sizeof(opt)) == -1)
+    {
+        std::cerr << "setsockopt failed\n";
+        close(_serverFd);
+        return 0;
+    }
+
     //remplir la structure necessaire pour bind apres
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
