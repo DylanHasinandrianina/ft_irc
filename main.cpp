@@ -1,4 +1,4 @@
-#include "./includes/server.hpp"
+#include "server.hpp"
 #include <sys/socket.h> // socket() listen() send()
 #include <fcntl.h> // fcntl()
 #include <netinet/in.h> // sockaddr_in

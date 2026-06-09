@@ -3,12 +3,15 @@
 
 #include "channels.hpp"
 #include "user.hpp"
+#include "dispatch.hpp"
 #include "command.hpp"
 #include <vector>
 #include <poll.h>
 #include <map>
 
 extern bool g_running;
+
+class Dispatcher;
 
 class Server{
     private:
@@ -22,6 +25,7 @@ class Server{
 
         std::map<std::string, Channel*> _channels;
     
+		Dispatcher _disp;
     public :
         Server(int port, std::string password);
         ~Server();
@@ -33,6 +37,7 @@ class Server{
         void clientEvent(size_t i);
         void disconnectClient(int fd);
         
+		const std::string& getPassword() const;	
         // void ExecuteCommand(Command& cmd);
 
         // void handlePass(Command& cmd);

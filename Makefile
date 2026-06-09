@@ -1,7 +1,8 @@
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP -Iincludes
 RM = rm -f
-SRCS = main.cpp server.cpp user.cpp command.cpp channels.cpp 
+SRCS = main.cpp server.cpp user.cpp command.cpp channels.cpp dispatch.cpp \
+		pass.cpp
 OBJS_DIR = objs
 OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
 DEP = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.d))

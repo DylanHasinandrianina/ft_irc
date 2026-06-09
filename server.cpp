@@ -1,14 +1,21 @@
-#include "./includes/server.hpp"
-#include "./includes/command.hpp"
+#include "server.hpp"
+#include "dispatch.hpp"
+#include "command.hpp"
+#include "user.hpp"
 #include <sys/socket.h> // socket() listen() send()
 #include <fcntl.h> // fcntl()
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h>   // close()
 
-Server::Server(int port, std::string password) : _port(port), _password(password){}
+Server::Server(int port, std::string password) : _port(port), _password(password), _disp(){}
 
 Server::~Server(){
     cleanup();
+}
+
+const std::string& Server::getPassword() const
+{
+	return (_password);
 }
 
 int Server::initServer(){
@@ -191,16 +198,21 @@ void Server::clientEvent(size_t i)
         user->appendToBuffer(buffer);
         std::string line;
         while ((user->extractCommand(line))){
-            Command cmd = parseCommand(line);
-            std::cout << "command name : " << cmd.command << '\n';
-            for (size_t j = 0; j < cmd.params.size(); j++){
-                std::cout << "param [" << j << "] : "<< cmd.params[j] << '\n';
+            Command cmd;
+			cmd.ParseCommand(line);
+
+			if(!cmd.isValid())
+				return ;
+
+			_disp.dispatch(cmd, *user, *this);
+            // std::cout << "command name : " << cmd.command << '\n';
+            // for (size_t j = 0; j < cmd.params.size(); j++){
+            //     std::cout << "param [" << j << "] : "<< cmd.params[j] << '\n';
             }
 
             //handle command
-        }
+	}
 
-    }
 }
 
 void Server::run(){
