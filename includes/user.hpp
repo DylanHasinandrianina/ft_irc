@@ -10,7 +10,11 @@ class User{
         int _fd;
         std::string _nickname;
         std::string _username;
-        std::string _buffer;
+
+		//server to client
+        std::string _outBuffer;
+		// client to server
+        std::string _InBuffer;
 
         bool _passOk;
         bool _nickOk;
@@ -21,13 +25,19 @@ class User{
         User(int fd);
         ~User();
 
+		// INPUT
         void appendToBuffer(std::string newData);
         bool extractCommand(std::string &cmd);
+
+		//OUTPUT
+	    void appendOutBuffer(const std::string& msg);
+		bool hasOutBuffer() const;
+		const std::string& getOutBuffer() const;
+		void clearOutBuffer();
 
         int getFd(){return _fd;}
         const std::string& getUsername() const {return _username;}
         const std::string& getNickname() const {return _nickname;}
-        const std::string& getBuffer() const { return _buffer;}
         bool isPassOk(){return _passOk;}
         bool isNickOk(){return _nickOk;}
         bool isUserOk(){return _userOk;}

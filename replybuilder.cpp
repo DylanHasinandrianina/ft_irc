@@ -1,4 +1,4 @@
-#include "ReplyBuilder.hpp"
+#include "replybuilder.hpp"
 
 #include <sstream>
 
@@ -41,7 +41,7 @@ std::string ReplyBuilder::NumericReply
 		// connection / welcome
 		// ======================
 		case RPL_WELCOME:
-			return formatReply(code, nick, nick,
+			return formatReply(code, nick, "",
 							   "Welcome to the IRC server");
 
 		case RPL_YOURHOST:
@@ -51,6 +51,11 @@ std::string ReplyBuilder::NumericReply
 		case RPL_CREATED:
 			return formatReply(code, nick, "",
 							   "This server was created today");
+
+
+		case RPL_MYINFO:
+			return formatReply(code, nick, "",
+							   "ircserv 1.0 o o");
 
 		// ======================
 		// registration errors

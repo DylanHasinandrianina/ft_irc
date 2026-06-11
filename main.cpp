@@ -35,7 +35,8 @@ int main(int ac, char **av)
     signal(SIGINT, signalHandler);
 
     Server server(port, password);
-    server.run();
+    server.InitServer();
+	server.ServerLoop();
 
     return 0;
 

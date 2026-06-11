@@ -27,6 +27,7 @@ class Command{
 		const std::string			&getCmd() const;
 		const std::string			&getTrailing() const;
 		std::string 				getParam(size_t i) const;
+		size_t 						paramCount() const;
 
 		std::string 				getTarget() const;
 		std::string 				getMessage() const;

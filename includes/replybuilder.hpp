@@ -8,6 +8,7 @@ enum ReplyCode
     RPL_WELCOME = 1,
     RPL_YOURHOST = 2,
     RPL_CREATED = 3,
+    RPL_MYINFO = 4,
 
     ERR_NOSUCHNICK = 401,
     ERR_NOSUCHCHANNEL = 403,

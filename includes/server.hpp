@@ -1,54 +1,61 @@
 #ifndef SERVER_HPP
+
 #define SERVER_HPP
 
-#include "channels.hpp"
-#include "user.hpp"
-#include "dispatch.hpp"
-#include "command.hpp"
-#include <vector>
-#include <poll.h>
-#include <map>
+# include <string>
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <netinet/in.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <poll.h>
+# include <vector>
+# include <map>
+# include <iostream>
 
-extern bool g_running;
+# include "user.hpp"
+# include "dispatch.hpp"
 
 class Dispatcher;
 
-class Server{
-    private:
-        int _port;
-        std::string _password;
-        int _serverFd;
+class Server
+{
+	private:
+		int						_ServerFd;
+		int						_Port;
+		std::vector<pollfd>		_Fds;
+		std::map<int, User>		_Clients;
+		const std::string		_Password;
+		Dispatcher				_Dispatch;
+	public:
+		Server(const int port, const std::string password);
+		~Server();
 
-        std::vector<struct pollfd> _pollFds;
+		const std::string &getPassword() const;
+		// --- Client access ---
+		bool					HasClient(int fd) const;
+		User 					&GetClient(int fd);
+		User*					findClientByNick(const std::string& nick);
 
-        std::map<int, User*> _users;
+		void					RemoveClient(int fd);
 
-        std::map<std::string, Channel*> _channels;
-    
-		Dispatcher _disp;
-    public :
-        Server(int port, std::string password);
-        ~Server();
+		// --- Core functions ---
+		bool 					InitServer();
+		void					ServerLoop();
 
-        int initServer();
-        void run();
-        void cleanup();
-        int serverEvent();
-        void clientEvent(size_t i);
-        void disconnectClient(int fd);
-        
-		const std::string& getPassword() const;	
-        // void ExecuteCommand(Command& cmd);
+		// --- IO ---
+		void					EnableWrite(int fd);
+		void					DisableWrite(int fd);
+		void					CheckIfClientHasSomethingTowrite();
+		bool					SendToClient(int fd);
+		bool					ReceiveFromClient(int fd);
 
-        // void handlePass(Command& cmd);
-        // void handleNick(Command& cmd);
-        // void handleUser(Command& cmd);
-        // void handleJoin(Command& cmd);
-        // void handlePrivmsg(Command& cmd);
+		// --- Connection ---
+		void					AcceptClient();
+		void					ClientDisconnect(int fd);
+		void					CleanServer();
 
-
-
+		void					tryRegister(User& user);
 };
-
 
 #endif

@@ -40,6 +40,11 @@ std::string Command::getParam(size_t i) const
     return params[i];
 }
 
+size_t Command::paramCount() const
+{
+    return params.size();
+}
+
 std::string Command::getTarget() const
 {
     if (!params.empty())
@@ -56,7 +61,7 @@ std::string Command::getMessage() const
     return "";
 }
 
-bool isValidPrefix(const std::string& prefix)
+bool Command::isValidPrefix(const std::string& prefix)
 {
     if (prefix.empty())
         return false;

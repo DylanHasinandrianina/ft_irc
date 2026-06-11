@@ -15,22 +15,16 @@ void Pass::execute(const Command& cmd, User& user, const std::string& serverPass
     // already registered
     if (user.isAuthenticated())
     {
-        userSend(user,
-            r.NumericReply(ERR_ALREADYREGISTERED,
-                           user.getNickname(),
-                           "",
-                           ""));
+        user.appendOutBuffer(
+            r.NumericReply(ERR_ALREADYREGISTERED, user.getNickname(), "", ""));
         return;
     }
 
     // missing parameter
     if (cmd.paramCount() < 1)
     {
-        userSend(user,
-            r.NumericReply(ERR_NEEDMOREPARAMS,
-                           user.getNickname(),
-                           "PASS",
-                           ""));
+        user.appendOutBuffer(
+			r.NumericReply(ERR_NEEDMOREPARAMS, user.getNickname(), "PASS", ""));
         return;
     }
 
@@ -39,14 +33,10 @@ void Pass::execute(const Command& cmd, User& user, const std::string& serverPass
     // wrong password
     if (password != serverPassword)
     {
-        userSend(user,
-            r.NumericReply(ERR_PASSWDMISMATCH,
-                           user.getNickname(),
-                           "",
-                           ""));
+        user.appendOutBuffer(
+			r.NumericReply(ERR_PASSWDMISMATCH, user.getNickname(), "", ""));
         return;
     }
-
     // success
     user.setPassOk(true);
 }
