@@ -1,49 +1,68 @@
 #ifndef SERVER_HPP
+
 #define SERVER_HPP
 
-#include "channels.hpp"
-#include "user.hpp"
-#include "command.hpp"
-#include <vector>
-#include <poll.h>
-#include <map>
+# include <string>
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <netinet/in.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <poll.h>
+# include <vector>
+# include <map>
+# include <iostream>
 
-extern bool g_running;
+# include "user.hpp"
+# include "dispatch.hpp"
+# include "channelmanager.hpp"
 
-class Server{
-    private:
-        int _port;
-        std::string _password;
-        int _serverFd;
+class Dispatcher;
+class ChannelManager;
 
-        std::vector<struct pollfd> _pollFds;
+class Server
+{
+	private:
+		int						_ServerFd;
+		int						_Port;
+		std::vector<pollfd>		_Fds;
+		std::map<int, User>		_Clients;
+		const std::string		_Password;
+		Dispatcher				_Dispatch;
+		ChannelManager			_ChannelManager;
+		
+	public:
+		Server(const int port, const std::string password);
+		~Server();
 
-        std::map<int, User*> _users;
+		const std::string &getPassword() const;
+		// --- Client access ---
+		bool					HasClient(int fd) const;
+		User 					&GetClient(int fd);
+		User*					findClientByNick(const std::string& nick);
 
-        std::map<std::string, Channel*> _channels;
-    
-    public :
-        Server(int port, std::string password);
-        ~Server();
+		void					RemoveClient(int fd);
 
-        int initServer();
-        void run();
-        void cleanup();
-        int serverEvent();
-        void clientEvent(size_t i);
-        void disconnectClient(int fd);
-        
-        // void ExecuteCommand(Command& cmd);
+		// --- Core functions ---
+		bool 					InitServer();
+		void					ServerLoop();
 
-        // void handlePass(Command& cmd);
-        // void handleNick(Command& cmd);
-        // void handleUser(Command& cmd);
-        // void handleJoin(Command& cmd);
-        // void handlePrivmsg(Command& cmd);
+		// --- IO ---
+		void					EnableWrite(int fd);
+		void					DisableWrite(int fd);
+		void					CheckIfClientHasSomethingTowrite();
+		bool					SendToClient(int fd);
+		bool					ReceiveFromClient(int fd);
 
+		// --- Connection ---
+		void					AcceptClient();
+		void					ClientDisconnect(int fd);
+		void					markDisconnect(int fd);
+		void					CleanServer();
 
+		void					tryRegister(User& user);
 
+		ChannelManager			&getChannelManager();
 };
-
 
 #endif

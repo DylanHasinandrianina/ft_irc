@@ -1,7 +1,10 @@
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP -Iincludes
 RM = rm -f
-SRCS = main.cpp server.cpp user.cpp command.cpp channels.cpp 
+SRCS = main.cpp server.cpp user.cpp command.cpp channels.cpp dispatch.cpp replybuilder.cpp \
+	   channelmanager.cpp \
+		pass.cpp usercmd.cpp nick.cpp join.cpp part.cpp quit.cpp privmsg.cpp mode.cpp \
+		topic.cpp kick.cpp invite.cpp
 OBJS_DIR = objs
 OBJS = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.o))
 DEP = $(addprefix $(OBJS_DIR)/, $(SRCS:.cpp=.d))

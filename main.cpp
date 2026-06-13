@@ -1,4 +1,4 @@
-#include "./includes/server.hpp"
+#include "server.hpp"
 #include <sys/socket.h> // socket() listen() send()
 #include <fcntl.h> // fcntl()
 #include <netinet/in.h> // sockaddr_in
@@ -35,7 +35,8 @@ int main(int ac, char **av)
     signal(SIGINT, signalHandler);
 
     Server server(port, password);
-    server.run();
+    server.InitServer();
+	server.ServerLoop();
 
     return 0;
 
