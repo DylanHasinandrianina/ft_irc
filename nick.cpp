@@ -5,6 +5,8 @@
 
 void Nick::execute(const Command& cmd, User& user, Server &serv)
 {
+	// if(!user.isPassOk())
+	// 	return ;
     ReplyBuilder r;
 
     if (cmd.paramCount() < 1)
@@ -33,4 +35,5 @@ void Nick::execute(const Command& cmd, User& user, Server &serv)
 	}
     user.setNickname(nick);
     user.setNickOk(true);
+	serv.tryRegister(user);
 }

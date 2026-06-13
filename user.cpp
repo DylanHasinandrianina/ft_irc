@@ -6,6 +6,7 @@ User::User(int fd){
     _nickOk = false;
     _userOk = false;
     _registered = false;
+	_isDisconnected = false;
 }
 
 User::~User(){}
@@ -41,7 +42,7 @@ void User::clearOutBuffer()
 
 // dagouill : changed function so it removes \n without \t too
 bool User::extractCommand(std::string &line){
-    size_t pos = _InBuffer.find("\n");
+    size_t pos = _InBuffer.find('\n');
     if (pos == std::string::npos)
         return false;
 
@@ -52,4 +53,19 @@ bool User::extractCommand(std::string &line){
 		line.pop_back();
 
     return true;
+}
+
+void User::addInvite(const std::string& channel)
+{
+    _invitedChannels.insert(channel);
+}
+
+bool User::isInvited(const std::string& channel) const
+{
+    return _invitedChannels.find(channel) != _invitedChannels.end();
+}
+
+void User::removeInvite(const std::string& channel)
+{
+    _invitedChannels.erase(channel);
 }

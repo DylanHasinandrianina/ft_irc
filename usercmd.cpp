@@ -3,8 +3,10 @@
 #include "command.hpp"
 #include "user.hpp"
 
-void UserCmd::execute(const Command& cmd, User& user)
+void UserCmd::execute(const Command& cmd, User& user, Server &serv)
 {
+	// if(!user.isPassOk() || !user.isNickOk())
+	// 	return ;
     ReplyBuilder r;
 
 	std::string username = cmd.getParam(0);
@@ -30,4 +32,5 @@ void UserCmd::execute(const Command& cmd, User& user)
     user.setUsername(cmd.getParam(0));
 
     user.setUserOk(true);
+	serv.tryRegister(user);
 }

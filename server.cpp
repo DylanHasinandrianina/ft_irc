@@ -18,7 +18,8 @@ Server::Server(const int port, const std::string password)
 	: 	_ServerFd(-1),
 		_Port(port),
 		_Password(password),
-		_Dispatch()
+		_Dispatch(),
+		_ChannelManager()
 {
 	signal(SIGINT, handle_signal);
 	signal(SIGTERM, handle_signal);
@@ -163,7 +164,7 @@ void Server::ServerLoop()
 					if (!SendToClient(CurrFd))
 						disconnect = true;
 				}
-				if (disconnect)
+				if (disconnect || GetClient(CurrFd).isDisconnected())
 				{
 					ClientDisconnect(CurrFd);
 					continue ;
@@ -247,11 +248,19 @@ bool Server::SendToClient(int fd)
     }
 
     ssize_t sent = send(fd, out.c_str(), out.size(), 0);
-    if (sent <= 0)
+    if (sent == 0)
         return false;
-
-    out.erase(0, sent);
-
+	if (sent == -1)
+		{
+			//busy but no disconnect
+			if (errno == EAGAIN || errno == EWOULDBLOCK)
+				return true; 
+			//interrupted but no disconnect
+			if (errno == EINTR)
+				return true;
+			return false;
+		}
+	out.erase(0, sent);
     if (out.empty())
         DisableWrite(fd);
 
@@ -265,8 +274,17 @@ bool Server::ReceiveFromClient(int fd)
     char buffer[1024];
 
     ssize_t bytes = recv(fd, buffer, sizeof(buffer) - 1, 0);
-    if (bytes <= 0)
+	// It means disconnect
+    if (bytes == 0)
         return false;
+if (bytes == -1)
+{
+    if (errno == EAGAIN || errno == EWOULDBLOCK)
+        return true; // NOT a disconnect
+	if (errno == EINTR)
+		return true;
+    return false;
+}
 
     buffer[bytes] = '\0';
 
@@ -274,7 +292,9 @@ bool Server::ReceiveFromClient(int fd)
         return false;
 
     User& user = GetClient(fd);
-
+	std::cout << "RAW RECV [" << bytes << "] = ";
+	std::cout.write(buffer, bytes);
+	std::cout << "]" << std::endl;
     // append raw data to INPUT buffer
     user.appendToBuffer(std::string(buffer));
 
@@ -285,13 +305,13 @@ bool Server::ReceiveFromClient(int fd)
 	// ParseCommand : parse line into prefix, command, params, trailing
 	while (user.extractCommand(line))
 	{
+			std::cout << "LINE: [" << line << "]" << std::endl;
 		cmd.ParseCommand(line);
 
 		if (!cmd.isValid())
 			continue ;
 
 		_Dispatch.dispatch(cmd, user, *this);
-		tryRegister(user);
 	}
 
     return true;
@@ -350,6 +370,12 @@ void Server::ClientDisconnect(int fd)
     close(fd);
 }
 
+void Server::markDisconnect(int fd)
+{
+    if (HasClient(fd))
+        GetClient(fd).setDisconnected(true);
+}
+
 void	Server::CleanServer()
 {
 	for (std::map<int, User>::iterator it = _Clients.begin(); it != _Clients.end(); ++it)
@@ -401,5 +427,12 @@ void Server::tryRegister(User& user)
                            user.getNickname(),
                            "ircserv 1.0 o o",
                            ""));
+
+	user.setAuthenticatedOk(true);
 	}
+}
+
+ChannelManager& Server::getChannelManager()
+{
+    return _ChannelManager;
 }

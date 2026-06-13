@@ -1,17 +1,14 @@
 #include "replybuilder.hpp"
 #include "command.hpp"
 #include "user.hpp"
+#include "pass.hpp"
+#include "server.hpp"
 
-class Pass
-{
-public:
-    static void execute(const Command& cmd, User& user, const std::string& serverPassword);
-};
-
-void Pass::execute(const Command& cmd, User& user, const std::string& serverPassword)
+void Pass::execute(const Command& cmd, User& user, Server &serv)
 {
     ReplyBuilder r;
 
+	std::cout << "test" << std::endl;
     // already registered
     if (user.isAuthenticated())
     {
@@ -31,12 +28,14 @@ void Pass::execute(const Command& cmd, User& user, const std::string& serverPass
     const std::string& password = cmd.getParam(0);
 
     // wrong password
-    if (password != serverPassword)
+    if (password != serv.getPassword())
     {
         user.appendOutBuffer(
 			r.NumericReply(ERR_PASSWDMISMATCH, user.getNickname(), "", ""));
         return;
     }
     // success
+	std::cout << "test2" << std::endl;
     user.setPassOk(true);
+	serv.tryRegister(user);
 }

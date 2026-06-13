@@ -2,6 +2,7 @@
 #define USER_HPP
 
 #include <iostream>
+#include <set>
 
 class User{
 
@@ -20,6 +21,9 @@ class User{
         bool _nickOk;
         bool _userOk;
         bool _registered;
+		bool _isDisconnected;
+
+		std::set<std::string> _invitedChannels;
 
     public:
         User(int fd);
@@ -42,6 +46,7 @@ class User{
         bool isNickOk(){return _nickOk;}
         bool isUserOk(){return _userOk;}
         bool isAuthenticated(){return _registered;}
+		bool isDisconnected() {return _isDisconnected;}
 
         void setNickname(std::string n){_nickname = n;}
         void setUsername(std::string u){_username = u;}
@@ -49,6 +54,11 @@ class User{
         void setNickOk(bool b){_nickOk = b;}
         void setUserOk(bool b){_userOk = b;}
         void setAuthenticatedOk(bool b){_registered = b;}
+		void setDisconnected(bool b) {_isDisconnected = b;}
+
+		void addInvite(const std::string &channel);
+		bool isInvited(const std::string &channel)const;
+		void removeInvite(const std::string& channel);
 
 };
 

@@ -15,8 +15,10 @@
 
 # include "user.hpp"
 # include "dispatch.hpp"
+# include "channelmanager.hpp"
 
 class Dispatcher;
+class ChannelManager;
 
 class Server
 {
@@ -27,6 +29,8 @@ class Server
 		std::map<int, User>		_Clients;
 		const std::string		_Password;
 		Dispatcher				_Dispatch;
+		ChannelManager			_ChannelManager;
+		
 	public:
 		Server(const int port, const std::string password);
 		~Server();
@@ -53,9 +57,12 @@ class Server
 		// --- Connection ---
 		void					AcceptClient();
 		void					ClientDisconnect(int fd);
+		void					markDisconnect(int fd);
 		void					CleanServer();
 
 		void					tryRegister(User& user);
+
+		ChannelManager			&getChannelManager();
 };
 
 #endif

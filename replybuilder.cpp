@@ -115,6 +115,10 @@ std::string ReplyBuilder::NumericReply
 			return formatReply(code, nick, target,
 							   "You're not channel operator");
 
+		case ERR_NOTONCHANNEL:
+			return formatReply(code, nick, target,
+							   "You're not on that channel");
+
 		// ======================
 		// message errors
 		// ======================
@@ -138,6 +142,9 @@ std::string ReplyBuilder::NumericReply
 							   "No topic is set");
 		case RPL_TOPIC:
 			return formatReply(code, nick, target, message);
+
+		case RPL_INVITING:
+			return formatReply(code, nick, target, "has been invited");
 
 		case RPL_NAMREPLY:
 			return formatReply(code, nick, target, message);
