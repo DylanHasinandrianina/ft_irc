@@ -31,8 +31,9 @@ void Dispatcher::dispatch(const Command& command, User& client, Server& serv)
     if (cmd == "NICK")
         return Nick::execute(command, client, serv);
 
-    if (cmd == "USER")
+    if (cmd == "USER"){
         return UserCmd::execute(command, client, serv);
+    }
 
 	if (cmd == "JOIN")
 	       return Join::execute(command, client, serv);
@@ -55,8 +56,10 @@ void Dispatcher::dispatch(const Command& command, User& client, Server& serv)
     if (cmd == "MODE")
         return Mode::execute(command, client, serv);
 
-    if (cmd == "QUIT")
+    if (cmd == "QUIT"){
         return Quit::execute(command, client, serv);
+    }
+
 	ReplyBuilder r;
 
 	// client.appendOutBuffer(

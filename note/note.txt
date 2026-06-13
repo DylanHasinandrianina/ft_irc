@@ -356,15 +356,18 @@ ETAPES :
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+COMMAND :
+PRIVMSG <target>(channel or user) :message
+KICK #channel user :reason (can kick even no user)
+INVITE user #channel
+TOPIC #channel :new topic
+MODE #channel +i (after kick, can always join, invite ticket still valid)
+MODE #channel +t
+MODE #channel +k password CAN ENTER EVEN NO PASS
+MODE #channel +o user CANT GIVE THE OP
+MODE #channel +l 10 CAN ALWAYS ENTER
++i → invite only
++t → topic protégé
++k → mot de passe
++o → donner op
++l → limite utilisateur

@@ -1,6 +1,7 @@
 #ifndef MODE_HPP
 #define MODE_HPP
 
+#include <cstdlib>
 #include "command.hpp"
 #include "user.hpp"
 #include "server.hpp"

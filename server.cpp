@@ -5,6 +5,10 @@
 
 #include <unistd.h>
 
+#include <csignal>   // signal, SIGINT, SIGTERM, sig_atomic_t
+#include <cerrno>    // errno
+#include <cstring>   // strerror
+
 // volatile : no optimization
 // sig_atomic_t : cannot be half written/interrupted = read/write atomically
 volatile sig_atomic_t sig = 1;
@@ -248,8 +252,9 @@ bool Server::SendToClient(int fd)
     }
 
     ssize_t sent = send(fd, out.c_str(), out.size(), 0);
-    if (sent == 0)
+    if (sent == 0){
         return false;
+	}
 	if (sent == -1)
 		{
 			//busy but no disconnect
@@ -275,16 +280,17 @@ bool Server::ReceiveFromClient(int fd)
 
     ssize_t bytes = recv(fd, buffer, sizeof(buffer) - 1, 0);
 	// It means disconnect
-    if (bytes == 0)
+    if (bytes == 0){
         return false;
-if (bytes == -1)
-{
-    if (errno == EAGAIN || errno == EWOULDBLOCK)
-        return true; // NOT a disconnect
-	if (errno == EINTR)
-		return true;
-    return false;
-}
+	}
+	if (bytes == -1)
+	{
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
+			return true; // NOT a disconnect
+		if (errno == EINTR)
+			return true;
+		return false;
+	}
 
     buffer[bytes] = '\0';
 

@@ -166,7 +166,7 @@ void	Command::ParseCommand(std::string line)
         if (i >= trimLine.size())
             break;
         
-        if (trimLine[i] == ':' && params.size() >= 0)
+        if (trimLine[i] == ':' && params.size() > 0)
 		{
             trailing = trimLine.substr(i + 1);
             break;

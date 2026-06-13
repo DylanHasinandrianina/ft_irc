@@ -110,7 +110,7 @@ void Mode::execute(const Command& cmd, User& user, Server& serv)
 
 			case 'l':
 				if (adding && paramIndex < cmd.paramCount())
-					setLimitMode(ch, true, std::atoi(cmd.getParam(paramIndex++).c_str()));
+					setLimitMode(ch, true, atoi(cmd.getParam(paramIndex++).c_str()));
 				else
 					setLimitMode(ch, false);
 				break;

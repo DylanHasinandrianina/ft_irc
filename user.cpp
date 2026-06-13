@@ -49,8 +49,8 @@ bool User::extractCommand(std::string &line){
     line = _InBuffer.substr(0, pos);
     _InBuffer.erase(0, pos + 1);
 
-	if (!line.empty() && line.back() == '\r')
-		line.pop_back();
+	if (!line.empty() && line[line.size() - 1] == '\r')
+        line.erase(line.size() - 1);
 
     return true;
 }
