@@ -305,13 +305,14 @@ bool Server::ReceiveFromClient(int fd)
     user.appendToBuffer(std::string(buffer));
 
 	std::string	line;
-	Command		cmd;
 
 	// extractcommand : extract one complete IRC message line form input buffer delimited by \n
 	// ParseCommand : parse line into prefix, command, params, trailing
 	while (user.extractCommand(line))
 	{
-			std::cout << "LINE: [" << line << "]" << std::endl;
+		Command		cmd;
+
+		std::cout << "LINE: [" << line << "]" << std::endl;
 		cmd.ParseCommand(line);
 
 		if (!cmd.isValid())
@@ -413,11 +414,10 @@ void Server::tryRegister(User& user)
     {
         user.setAuthenticatedOk(true);
 
-	  user.appendOutBuffer(
-            r.NumericReply(RPL_WELCOME,
-                           user.getNickname(),
-                           ":Welcome to the IRC network",
-                           ""));
+		user.appendOutBuffer(
+				":ircserv 001 " + user.getNickname() + 
+				" :Welcome to the IRC Network " + 
+				user.getNickname() + "!" + user.getUsername() + "@localhost\r\n");
         user.appendOutBuffer(
             r.NumericReply(RPL_YOURHOST,
                            user.getNickname(),

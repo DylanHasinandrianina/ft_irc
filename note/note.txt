@@ -371,3 +371,17 @@ MODE #channel +l 10 CAN ALWAYS ENTER
 +k → mot de passe
 +o → donner op
 +l → limite utilisateur
+
+
+big with irssi:
+
+msg problem:
+the message shows two time for the client who send it
+/msg <user> doest work
+
+topic problem:
+if a member of a channel set up the topic, and then a new member
+enter the channel, and tap /topic #channel, he get : No topic set for #channel
+but if the first member or the new member change again the topic, now the new 
+member will see it
+

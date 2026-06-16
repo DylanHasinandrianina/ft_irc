@@ -14,6 +14,7 @@
 #include "topic.hpp"
 #include "mode.hpp"
 #include "quit.hpp"
+#include "cap.hpp"
 
 Dispatcher::Dispatcher() {}
 
@@ -24,6 +25,9 @@ void Dispatcher::dispatch(const Command& command, User& client, Server& serv)
     const std::string& cmd = command.getCmd();
 
 	std::cout << "[DISPATCH] cmd=" << cmd << std::endl;
+
+    if (cmd == "CAP")
+        return Cap::execute(command, client, serv);
 
     if (cmd == "PASS")
         return Pass::execute(command, client, serv);

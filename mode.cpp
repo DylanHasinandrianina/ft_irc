@@ -49,6 +49,9 @@ void Mode::execute(const Command& cmd, User& user, Server& serv)
 
 	std::string target = cmd.getParam(0);
 
+	if (target[0] != '#')
+        return;
+
 	ChannelManager& cm = serv.getChannelManager();
 
 	if (!cm.hasChannel(target))
