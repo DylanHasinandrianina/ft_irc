@@ -50,7 +50,10 @@ void Mode::execute(const Command& cmd, User& user, Server& serv)
 	std::string target = cmd.getParam(0);
 
 	if (target[0] != '#')
-        return;
+	{
+		user.appendOutBuffer(":ircserv 221 " + user.getNickname() + " +\r\n");
+		return;
+	}
 
 	ChannelManager& cm = serv.getChannelManager();
 
@@ -72,7 +75,7 @@ void Mode::execute(const Command& cmd, User& user, Server& serv)
 		if (ch->isTopicOpMode())     modes += "t";
 
 		user.appendOutBuffer(
-			r.NumericReply(RPL_CHANNELMODEIS, user.getNickname(), target, modes));
+        ":ircserv 324 " + user.getNickname() + " " + target + " " + modes + "\r\n");
 		return;
 	}
 
@@ -122,4 +125,12 @@ void Mode::execute(const Command& cmd, User& user, Server& serv)
 				break;
 		}
 	}
+
+	//add broadcast mode
+	std::string modeMsg =
+		":" + user.getNickname() +
+		"!" + user.getUsername() +
+		"@localhost MODE " +
+		target + " " + modes + "\r\n";
+	ch->broadcast(modeMsg);
 }

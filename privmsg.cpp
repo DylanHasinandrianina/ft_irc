@@ -81,8 +81,6 @@ void Privmsg::execute(const Command& cmd, User& user, Server& serv)
     // USER MESSAGE
     User* targetUser = serv.findClientByNick(target);
 
-    std::cout << "PRIVMSG to user [" << target << "] found=" << (targetUser ? "yes" : "no") << std::endl;
-
     if (!targetUser)
     {
         user.appendOutBuffer(

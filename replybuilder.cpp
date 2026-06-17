@@ -122,6 +122,8 @@ std::string ReplyBuilder::NumericReply
 		case ERR_NOSUCHNICK:
     		return formatReply(code, nick, target, "No such nick");
 
+		case RPL_CHANNELMODEIS:
+    		return formatReply(code, nick, target, message);
 		// ======================
 		// message errors
 		// ======================
