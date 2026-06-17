@@ -103,4 +103,12 @@ void Join::execute(const Command& cmd, User& user, Server& serv)
 
 	user.appendOutBuffer(
 		r.NumericReply(RPL_ENDOFNAMES, user.getNickname(), channelName, "End of NAMES"));
+	
+	//add fix topic
+	if (!channel->getTopic().empty())
+		user.appendOutBuffer(
+			r.NumericReply(RPL_TOPIC, user.getNickname(), channelName, channel->getTopic()));
+	else
+		user.appendOutBuffer(
+	        r.NumericReply(RPL_NOTOPIC, user.getNickname(), channelName, ""));
 }

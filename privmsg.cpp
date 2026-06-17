@@ -73,12 +73,15 @@ void Privmsg::execute(const Command& cmd, User& user, Server& serv)
             target +
             " :" + message + "\r\n";
 
-        channel->broadcast(msg);
+        //fix double message
+        channel->broadcastExcept(msg, &user);
         return;
     }
 
     // USER MESSAGE
     User* targetUser = serv.findClientByNick(target);
+
+    std::cout << "PRIVMSG to user [" << target << "] found=" << (targetUser ? "yes" : "no") << std::endl;
 
     if (!targetUser)
     {

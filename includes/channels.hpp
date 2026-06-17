@@ -58,6 +58,7 @@ class Channel{
 
 		void 						broadcast(const std::string& msg);
 
+        void                        broadcastExcept(const std::string& msg, User* exclude);
 };
 
 #endif

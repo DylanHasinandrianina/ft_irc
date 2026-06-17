@@ -118,6 +118,9 @@ std::string ReplyBuilder::NumericReply
 		case ERR_NOTONCHANNEL:
 			return formatReply(code, nick, target,
 							   "You're not on that channel");
+		//add fix user message
+		case ERR_NOSUCHNICK:
+    		return formatReply(code, nick, target, "No such nick");
 
 		// ======================
 		// message errors

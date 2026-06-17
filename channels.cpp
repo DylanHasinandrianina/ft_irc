@@ -89,3 +89,13 @@ void Channel::broadcast(const std::string& msg)
         it->second->appendOutBuffer(msg);
     }
 }
+
+void Channel::broadcastExcept(const std::string& msg, User* exclude)
+{
+    for (std::map<int, User*>::iterator it = _users.begin();
+         it != _users.end(); ++it)
+    {
+        if (it->second->getFd() != exclude->getFd())
+            it->second->appendOutBuffer(msg);
+    }
+}
