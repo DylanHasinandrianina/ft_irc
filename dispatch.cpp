@@ -28,6 +28,12 @@ void Dispatcher::dispatch(const Command& command, User& client, Server& serv)
 
     if (cmd == "CAP")
         return Cap::execute(command, client, serv);
+    
+    if (cmd == "PING")
+    {
+        client.appendOutBuffer(":ircserv PONG ircserv :" + command.getParam(0) + "\r\n");
+        return;
+    }   
 
     if (cmd == "PASS")
         return Pass::execute(command, client, serv);
