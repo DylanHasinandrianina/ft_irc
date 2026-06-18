@@ -52,6 +52,7 @@ class Channel{
         bool 						isTopicOpMode() {return _topicOpMode;}
 
 		void 						setInviteOnlyMode(bool);
+		void						setKeyRequiredMode(bool);
 		void 						setTopicOpMode(bool);
 		void 						setPassword(const std::string&);
 		void 						setUserLimit(int);

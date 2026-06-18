@@ -16,24 +16,32 @@ void Nick::execute(const Command& cmd, User& user, Server &serv)
         return;
     }
 
-    std::string nick = cmd.getParam(0);
+    std::string newNick = cmd.getParam(0);
 
     // basic validation
-    if (nick.empty() || nick.find(' ') != std::string::npos)
+    if (newNick.empty() || newNick.find(' ') != std::string::npos)
     {
         user.appendOutBuffer(
-            r.NumericReply(ERR_ERRONEUSNICKNAME, nick, "Erroneous nickname", ""));
+            r.NumericReply(ERR_ERRONEUSNICKNAME, newNick, "Erroneous nickname", ""));
         return;
     }
 
-	if (serv.findClientByNick(nick))
+	if (serv.findClientByNick(newNick))
 	{
 		user.appendOutBuffer(
-			r.NumericReply(ERR_NICKNAMEINUSE, user.getNickname(), nick,
+			r.NumericReply(ERR_NICKNAMEINUSE, user.getNickname(), newNick,
 				  "Nickname is already in use"));
 		return;
 	}
-    user.setNickname(nick);
+
+	 std::string oldNick = user.getNickname();
+
+    user.setNickname(newNick);
     user.setNickOk(true);
+
+    std::string msg =
+        ":" + oldNick + "!" + user.getUsername() +
+        "@localhost NICK :" + newNick + "\r\n";
+	serv.getChannelManager().broadcastToUser(user, msg);
 	serv.tryRegister(user);
 }

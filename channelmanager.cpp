@@ -60,3 +60,16 @@ void ChannelManager::removeUserFromAllChannels(User& user)
             ++it;
     }
 }
+
+void ChannelManager::broadcastToUser(User& user, const std::string& msg)
+{
+    for (std::map<std::string, Channel>::iterator it = _channels.begin();
+         it != _channels.end();
+         ++it)
+    {
+        Channel& ch = it->second;
+
+        if (ch.isUserInChannel(&user))
+            ch.broadcast(msg);
+    }
+}

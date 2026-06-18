@@ -16,9 +16,15 @@ static void setTopicMode(Channel* ch, bool enable)
 static void setKeyMode(Channel* ch, bool enable, const std::string& key = "")
 {
     if (enable)
+	{
         ch->setPassword(key);
+		ch->setKeyRequiredMode(true);
+	}
     else
+	{
         ch->setPassword("");
+		ch->setKeyRequiredMode(false);
+	}
 }
 
 static void setLimitMode(Channel* ch, bool enable, int limit = 0)
@@ -87,50 +93,140 @@ void Mode::execute(const Command& cmd, User& user, Server& serv)
 	}
 
 	std::string modes = cmd.getParam(1);
+
 	bool adding = true;
 	size_t paramIndex = 2;
+
+	std::string appliedModes;
+	std::string appliedParams;
+	char currentSign = 0;
 
 	for (size_t i = 0; i < modes.size(); i++)
 	{
 		char m = modes[i];
 
-		if (m == '+') { adding = true; continue; }
-		if (m == '-') { adding = false; continue; }
-
+		if (m == '+')	
+		{
+			adding = true;
+			currentSign = '+';
+			continue ;
+		}
+		if (m == '-')	
+		{
+			adding = false;
+			currentSign = '-';
+			continue ;
+		}
 		switch (m)
 		{
 			case 'i':
 				setInviteMode(ch, adding);
+				if (appliedModes.empty() || appliedModes[appliedModes.size() - 1] != currentSign)
+					appliedModes += currentSign;
+				appliedModes += 'i';
 				break;
 
 			case 't':
 				setTopicMode(ch, adding);
+				if (appliedModes.empty() || appliedModes[appliedModes.size() - 1] != currentSign)
+					appliedModes += currentSign;
+				appliedModes += 't';
 				break;
 
-			case 'k':
-				if (adding && paramIndex < cmd.paramCount())
-					setKeyMode(ch, true, cmd.getParam(paramIndex++));
+			case 'o':
+			{
+				if (paramIndex >= cmd.paramCount())
+				{
+					user.appendOutBuffer(
+						r.NumericReply(ERR_NEEDMOREPARAMS,
+									   user.getNickname(),
+									   "MODE",
+									   ""));
+					return;
+				}
+				std::string nick = cmd.getParam(paramIndex++);
+				User* target = serv.findClientByNick(nick);
+
+				if (!target || !ch->isUserInChannel(target))
+					return;
+
+				if (adding)
+					ch->addOperator(target);
 				else
+					ch->removeOperator(target);
+
+				if (appliedModes.empty() || appliedModes[appliedModes.size() - 1] != currentSign)
+					appliedModes += currentSign;
+				appliedModes += 'o';
+				appliedParams += " " + nick;
+				break;
+			}
+			case 'k':
+				if (adding)
+				{
+					if (paramIndex >= cmd.paramCount())
+					{
+						user.appendOutBuffer(
+	  						r.NumericReply(ERR_NEEDMOREPARAMS,
+                               user.getNickname(), "MODE",""));
+	  					return ;
+	  				}
+					std::string key = cmd.getParam(paramIndex++);
+					setKeyMode(ch, true, key);
+
+					if (appliedModes.empty() || appliedModes[appliedModes.size() - 1] != currentSign)
+						appliedModes += currentSign;
+					appliedModes += 'k';
+					appliedParams += " " + key;
+				}
+				else
+				{
 					setKeyMode(ch, false);
+
+					if (appliedModes.empty() || appliedModes[appliedModes.size() - 1] != currentSign)
+					appliedModes += currentSign;
+					appliedModes += 'k';
+				}
 				break;
 
 			case 'l':
-				if (adding && paramIndex < cmd.paramCount())
-					setLimitMode(ch, true, atoi(cmd.getParam(paramIndex++).c_str()));
-				else
-					setLimitMode(ch, false);
-				break;
+				if (adding)
+				{
+					if (paramIndex >= cmd.paramCount())
+					{
+						user.appendOutBuffer(
+						r.NumericReply(ERR_NEEDMOREPARAMS, user.getNickname(),"MODE", ""));
+					return;
+	  				}
+					std::string limitStr = cmd.getParam(paramIndex++);
+					setLimitMode(ch, true, atoi(limitStr.c_str()));
 
+					if (appliedModes.empty() || appliedModes[appliedModes.size() - 1] != currentSign)
+						appliedModes += currentSign;
+					appliedModes += 'l';
+					appliedParams += " " + limitStr;
+				}
+				else
+				{
+				   setLimitMode(ch, false);
+
+					if (appliedModes.empty() || appliedModes[appliedModes.size() - 1] != currentSign)
+						appliedModes += currentSign;
+					appliedModes += 'l';
+				}
+				break;
 			default:
 				break;
 		}
 	}
 
-	//add broadcast mode
-	std::string modeMsg =
-		":" + user.getNickname() +
-		"!" + user.getUsername() +
-		"@localhost MODE " +
-		target + " " + modes + "\r\n";
-	ch->broadcast(modeMsg);
+	if (!appliedModes.empty())
+	{
+		std::string modeMsg =
+			":" + user.getNickname() +
+			"!" + user.getUsername() +
+			"@localhost MODE " +
+			target + " " + appliedModes + appliedParams + "\r\n";
+		ch->broadcast(modeMsg);
+	}
 }

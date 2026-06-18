@@ -56,11 +56,19 @@ void Invite::execute(const Command& cmd, User& user, Server& serv)
             r.NumericReply(ERR_NOSUCHNICK, user.getNickname(), targetNick, ""));
         return;
     }
-
+    if (channel->isUserInChannel(target))
+    {
+        user.appendOutBuffer(
+            r.NumericReply(ERR_USERONCHANNEL,
+                           user.getNickname(),
+                           targetNick + " " + channelName,
+                           ""));
+        return;
+    }
 	target->addInvite(channelName);
 
     target->appendOutBuffer(
-        ":" + user.getNickname() + "!user@localhost INVITE " +
+        ":" + user.getNickname() + "!" + user.getUsername() + "@localhost INVITE " +
         targetNick + " " + channelName + "\r\n");
 
     user.appendOutBuffer(

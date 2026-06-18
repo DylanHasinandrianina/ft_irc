@@ -85,11 +85,45 @@ void Join::execute(const Command& cmd, User& user, Server& serv)
 	}
 	bool firstUser = channel->isEmpty();
 
+	if (channel->isKeyRequiredMode())
+	{
+		if (cmd.paramCount() < 2)
+		{
+			user.appendOutBuffer(
+				r.NumericReply(ERR_BADCHANNELKEY,
+							   user.getNickname(),
+							   channelName,
+							   ""));
+			return;
+		}
 
+		std::string key = cmd.getParam(1);
+
+		if (key != channel->getPassword())
+		{
+			user.appendOutBuffer(
+				r.NumericReply(ERR_BADCHANNELKEY,
+							   user.getNickname(),
+							   channelName,
+							   ""));
+			return;
+		}
+	}
+	if (channel->getUserLimit() > 0 &&
+		channel->getNbUser() >= (size_t)channel->getUserLimit())
+	{
+		user.appendOutBuffer(
+			r.NumericReply(ERR_CHANNELISFULL,
+						   user.getNickname(),
+						   channelName,
+						   ""));
+		return;
+	}
 	channel->addUser(&user);
 	if (firstUser)
 		channel->addOperator(&user);
 
+	user.removeInvite(channelName);
 	std::string joinMsg =
 		":" + user.getNickname() +
 		"!" + user.getUsername() +

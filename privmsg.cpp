@@ -26,7 +26,13 @@ void Privmsg::execute(const Command& cmd, User& user, Server& serv)
     }
 
     std::string target = cmd.getParam(0);
-    std::string message = cmd.getTrailing();
+    std::string message; 
+
+	if (!cmd.getTrailing().empty())
+		message = cmd.getTrailing();
+	else if (cmd.paramCount() >= 2)
+		message = cmd.getParam(1);
+
 
     // EMPTY MESSAGE CHECK
     if (message.empty())

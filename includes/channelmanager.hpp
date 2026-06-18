@@ -26,6 +26,7 @@ public:
     std::map<std::string, Channel>& 		getChannels();
 
 	void 									removeUserFromAllChannels(User& user);
+	void									broadcastToUser(User& user, const std::string& msg);
 };
 
 #endif

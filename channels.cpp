@@ -62,6 +62,11 @@ void Channel::setInviteOnlyMode(bool mode)
     _inviteMode = mode;
 }
 
+void Channel::setKeyRequiredMode(bool mode)
+{
+	_keyRequiredMode = mode;
+}
+
 void Channel::setTopicOpMode(bool mode)
 {
     _topicOpMode = mode;

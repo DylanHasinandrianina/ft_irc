@@ -95,6 +95,9 @@ std::string ReplyBuilder::NumericReply
 			return formatReply(code, nick, target,
 							   "No such channel");
 
+		case ERR_USERONCHANNEL:
+			return formatReply(code, nick, target,
+                       "is already on channel");
 		case ERR_CANNOTSENDTOCHAN:
 			return formatReply(code, nick,target,
 							   "Cannot send to channel");
