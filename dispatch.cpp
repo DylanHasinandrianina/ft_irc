@@ -35,6 +35,14 @@ void Dispatcher::dispatch(const Command& command, User& client, Server& serv)
         return;
     }   
 
+    if (cmd == "WHO")
+    {
+        client.appendOutBuffer(
+            ":ircserv 315 " + client.getNickname() + " " + 
+            command.getParam(0) + " :End of WHO list\r\n");
+        return;
+    }
+
     if (cmd == "PASS")
         return Pass::execute(command, client, serv);
 
