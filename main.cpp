@@ -21,9 +21,9 @@ int main(int ac, char **av)
         std::cout << "Usage: ./ircserv <port> <password>\n";
         return (1);
     }
-    //ports 0 -> 1023 : services systeme(SSH, HTTP, HTTPS,...)
-    //ports 1024 -> 49151 : ports utilisateurs, addapter pour le projet
-    //ports 49152 -> 65535 : ports dynamiques/temporaires pour connexions temporaires
+    // ports 0 -> 1023: system services (SSH, HTTP, HTTPS, ...)
+    // ports 1024 -> 49151: user ports, adapt for the project
+    // ports 49152 -> 65535: dynamic/ephemeral ports for temporary connections
     int port = atoi(av[1]);
     if (port < 1024 || port > 65535)
     {
