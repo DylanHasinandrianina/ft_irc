@@ -85,6 +85,13 @@ void Mode::execute(const Command& cmd, User& user, Server& serv)
 		return;
 	}
 
+	if (cmd.getParam(1)[0] != '+' && cmd.getParam(1)[0] != '-')
+	{
+		user.appendOutBuffer(
+			":ircserv 368 " + user.getNickname() + " " + target + " :End of channel ban list\r\n");
+		return;
+	}
+
 	if (!ch->isOperator(&user))
 	{
 		user.appendOutBuffer(
